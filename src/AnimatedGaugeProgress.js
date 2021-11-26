@@ -6,18 +6,20 @@ const AnimatedProgress = Animated.createAnimatedComponent(GaugeProgress);
 const ActiveState = "active"
 
 export default class AnimatedGaugeProgress extends React.Component {
-
   state = {
-    chartFillAnimation: new Animated.Value(this.props.prefill || 0)
+    chartFillAnimation: new Animated.Value(this.props.prefill || 0),
+    change: null
   }
 
-  componentDidMount() { 
+  componentDidMount() {
     this.animateFill();
-    AppState.addEventListener('change', this._handleAppStateChange);
+    var change =  AppState.addEventListener('change', this._handleAppStateChange);
+    this.setState({change})
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
+    this.state.change.remove();
+    // AppState.removeEventListener('change', this._handleAppStateChange);
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -46,7 +48,7 @@ export default class AnimatedGaugeProgress extends React.Component {
       }
     ).start(onAnimationComplete);
   }
-  
+
   render() {
     const { fill, prefill, ...other } = this.props;
 
